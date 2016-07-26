@@ -1,0 +1,63 @@
+.github-icon {
+    height: 20px;
+    width: 20px;
+    transition: opacity 1s ease;
+}
+
+.d-footer {
+
+    margin-top: 40px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-style: italic;
+    font-size: 8pt;
+
+}
+
+.d-footer-text {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 4px 10px 4px 10px;
+    display:inline-block;
+    /*background-color: #666 !important;*/
+    color: #666;
+}
+
+.d-miniBio > img {
+    border-radius: 50px;
+    shape-outside:circle();
+    float:left;
+    margin-right: 1rem;
+    width: 20%;
+}
+
+.d-miniBio > p {
+    font-size: 8pt;
+}
+
+.d-miniBio > h1 {
+    font-size: 10pt;
+    font-weight: bold;
+    margin:0;
+    padding-right: 80px;
+    /*text-align: center;*/
+}
+
+.d-sidebar {
+    border-right: 1px solid #eee
+}
+
+.d-sidebar > hr {
+    margin: 10px 0 10px 0;
+}
+
+.d-linkedin {
+    height: 20px;
+    margin-bottom: 10px;
+    margin-left: 2px;
+}
+
+.d-github-link > p {
+    display:inline-block;
+    padding-left: 4px;
+}
