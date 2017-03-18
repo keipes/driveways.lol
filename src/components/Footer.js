@@ -7,7 +7,7 @@ export default class Footer extends React.Component {
             <Grid className="d-footer">
             <Col md="12">
                 <div className="d-footer-text">
-                    &copy; 2016 Keith Smith -
+                    &copy; 2017 Keith Smith -
                     This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
                 </div>
             </Col>
