@@ -1,4 +1,4 @@
-import React, {PropTypes} from 'react';
+import React from 'react';
 import { Grid, Col } from 'react-bootstrap';
 
 export default class Footer extends React.Component {

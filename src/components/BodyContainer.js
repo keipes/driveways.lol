@@ -1,4 +1,4 @@
-import React, {PropTypes} from 'react';
+import React from 'react';
 import Navigation from './navigation';
 import { Grid, Col } from 'react-bootstrap';
 import Content from './Content';
@@ -14,7 +14,10 @@ export default class BodyContainer extends React.Component {
                 <Col md="3" xsHidden smHidden>
                     <SideBar/>
                 </Col>
-                <Col md="9" sm="12"><Content/></Col>
+                <Col md="9" sm="12">
+                    {this.props.children}
+                    {/*<Content/>*/}
+                </Col>
 
             </Grid>
             <Footer/>

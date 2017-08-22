@@ -9,13 +9,13 @@ export default class Navigation extends React.Component {
                 <div className="container">
                     <Navbar.Header>
                         <Navbar.Brand>
-                            Driveways
+                            <a href="/">driveways</a>
                         </Navbar.Brand>
                         <Navbar.Toggle />
                     </Navbar.Header>
                     <Navbar.Collapse>
                         <Nav>
-                            <NavItem href="ts3server://ts.driveways.lol?port=9987">Launch TeamSpeak</NavItem>
+                            <NavItem href="/docs/static_s3">Static S3 Sites</NavItem>
                         </Nav>
                     </Navbar.Collapse>
                 </div>

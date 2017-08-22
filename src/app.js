@@ -1,38 +1,43 @@
 import React from 'react';
-// import Router, {Route, DefaultRoute} from 'react-router';
 
-import {Route, IndexRoute, match, RouterContext} from 'react-router';
+import { StaticRouter, BrowserRouter, Route} from 'react-router-dom';
 
 import ReactDOMServer from 'react-dom/server';
+import ReactDOM from 'react-dom';
 import RootPage from './components/RootPage';
-import IndexPage from './components/IndexPage';
+import StaticS3 from 'components/docs/StaticS3';
+import Content from 'components/Content';
 
-console.log("before routes");
-const routes = (
-    <Route path="/" component={RootPage}>
-        {/*<IndexRoute handler={IndexPage}/>*/}
-    </Route>
-);
-console.log("post routes");
+const inner = (<RootPage>
+    <Route path="" component={Content}/>
+    <Route path="/docs/static_s3" component={StaticS3}/>
+</RootPage>);
 
-// const html = ReactDOMServer.renderToString(
-//     <Router history={} location={} routes={'/'}
-// );
+const get_html = (rendered) => {
+    return `<!doctype html>
+        <html>
+            <head>
+                <link rel="icon" type="image/png" href="/img/favicon.png"/>
+                <link rel="stylesheet" href="/css/style.css"/>
+                <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css"/>
+                <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap-theme.min.css"/>
+                <script src="/bundle.js" async></script>
+            </head>
+            <body>
+                <div id="react-mount-point">${rendered}</div>
+            </body>
+        </html>`;
+};
 
-module.exports = function(path, props, f) {
-    console.log("app called");
-    match({routes, location: path}, (error, redirectLocation, renderProps) => {
-        const html = ReactDOMServer.renderToString(<RouterContext {...renderProps}/>);
-        f('<!doctype html>' + html);
-    });
-    // Router.run(routes, path, (Root) => {
-    //     console.log(Root);
-    //     const html = ReactDOMServer.renderToString(<Root/>);
-    //     console.log("foo");
-    //     f('<!doctype html>' + html);
-    // });
+
+
+if (typeof window !== 'undefined' && window.document) {
+    ReactDOM.render(<BrowserRouter>{inner}</BrowserRouter>, document.getElementById('react-mount-point'))
+} else {
+    module.exports = function(path, props, f) {
+        const html = get_html(ReactDOMServer.renderToString(<StaticRouter location={path} context={props}>
+            {inner}
+        </StaticRouter>));
+        f(html);
+    };
 }
-//
-// export function render() {
-//
-// }

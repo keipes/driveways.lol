@@ -10,14 +10,15 @@ const GLOBALS = {
 };
 
 const routes = [
-    '/'
+    '/',
+    '/docs/static_s3'
 ];
 console.log(path.resolve(__dirname, '../build/bundle.js'));
 const config = {
     context: path.resolve(__dirname, '../src'),
     output: {
         path: path.resolve(__dirname, '../build'),
-        publicPath: '/assets/',
+        // publicPath: '/assets/',
         sourcePrefix: '  ',
         libraryTarget: 'umd'
     },
@@ -37,10 +38,7 @@ const config = {
                     path.resolve(__dirname, '../src'),
                 ],
                 query: {
-                    // https://github.com/babel/babel-loader#options
                     cacheDirectory: DEBUG,
-
-                    // https://babeljs.io/docs/usage/options/
                     babelrc: false,
                     presets: [
                         'react',
@@ -60,11 +58,9 @@ const config = {
         ]
     },
     plugins: [
-        // new StaticSiteGeneratorPlugin(path.resolve(__dirname, '../build/bundle.js'), routes),
         new StaticSiteGeneratorPlugin('bundle.js', routes),
         new CopyWebpackPlugin([{
             from: '../static',
-            // to: path.resolve(__dirname, '../build')
         }])
     ],
     stats: {
