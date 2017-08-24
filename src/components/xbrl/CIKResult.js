@@ -11,13 +11,7 @@ export default class CIKResult extends React.Component {
         }
         return (
             <a href={url} className={"d-cik-result " + quality_class}
-                 key={this.props.key}
-                 onClick={this.handleClick.bind(this)}>{this.props.result.name}</a>
+                 key={this.props.key}>{this.props.result.name}</a>
         );
-    }
-
-    handleClick() {
-        const url = 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=' + this.props.result.cik;
-        window.open(url);
     }
 }
