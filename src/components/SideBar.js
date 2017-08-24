@@ -13,8 +13,8 @@ export default class SideBar extends React.Component {
                     {/*</Col>*/}
                 {/*</Row>*/}
                 {/*<hr/>*/}
-                <GithubWidget/>
-                <LinkedInWidget/>
+                {/*<GithubWidget/>*/}
+                {/*<LinkedInWidget/>*/}
                 {/*<SpotifyWidget/>*/}
                 <hr/>
             </div>

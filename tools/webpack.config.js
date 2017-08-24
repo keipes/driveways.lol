@@ -2,6 +2,8 @@ import path from 'path';
 import StaticSiteGeneratorPlugin from 'static-render-webpack-plugin';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
 
+const webpack = require("webpack");
+
 const DEBUG = !process.argv.includes('--release');
 
 const GLOBALS = {
@@ -61,7 +63,10 @@ const config = {
         new StaticSiteGeneratorPlugin('bundle.js', routes),
         new CopyWebpackPlugin([{
             from: '../static',
-        }])
+        }]),
+        new webpack.optimize.UglifyJsPlugin({
+            compress: { warnings: false }
+        })
     ],
     stats: {
         chunks: false

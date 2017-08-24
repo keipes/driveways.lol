@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { StaticRouter, BrowserRouter, Route} from 'react-router-dom';
+import { StaticRouter, BrowserRouter, Route, Switch} from 'react-router-dom';
 
 import ReactDOMServer from 'react-dom/server';
 import ReactDOM from 'react-dom';
@@ -8,9 +8,12 @@ import RootPage from './components/RootPage';
 import StaticS3 from 'components/docs/StaticS3';
 import Content from 'components/Content';
 
-const inner = (<RootPage>
-    <Route path="" component={Content}/>
-    <Route path="/docs/static_s3" component={StaticS3}/>
+const inner = (
+<RootPage>
+    <Switch>
+        <Route exact path="/" component={Content}/>
+        <Route path="/docs/static_s3" component={StaticS3}/>
+    </Switch>
 </RootPage>);
 
 const get_html = (rendered) => {
@@ -32,12 +35,18 @@ const get_html = (rendered) => {
 
 
 if (typeof window !== 'undefined' && window.document) {
-    ReactDOM.render(<BrowserRouter>{inner}</BrowserRouter>, document.getElementById('react-mount-point'))
+    ReactDOM.render(
+        <BrowserRouter>
+            {inner}
+        </BrowserRouter>
+        , document.getElementById('react-mount-point'))
 } else {
     module.exports = function(path, props, f) {
-        const html = get_html(ReactDOMServer.renderToString(<StaticRouter location={path} context={props}>
-            {inner}
-        </StaticRouter>));
+        const html = get_html(ReactDOMServer.renderToString(
+            <StaticRouter location={path} context={props}>
+                {inner}
+            </StaticRouter>
+        ));
         f(html);
     };
 }
