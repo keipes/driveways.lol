@@ -27,7 +27,7 @@ export default class Content extends React.Component {
                 onSubmit={(e) => {e.preventDefault();}}>
                 <FormGroup
                     controlId="formBasicText"
-                    validationState={true}>
+                    validationState={null}>
                     <ControlLabel>Lookup Company</ControlLabel>
                     <FormControl
                         type="text"

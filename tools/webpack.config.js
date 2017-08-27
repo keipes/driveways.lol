@@ -5,7 +5,7 @@ import CopyWebpackPlugin from 'copy-webpack-plugin';
 const webpack = require("webpack");
 
 const DEBUG = !process.argv.includes('--release');
-
+console.log('DEBUG = ' + DEBUG);
 const GLOBALS = {
     'process.env.NODE_ENV': DEBUG ? '"development"' : '"production"',
     __DEV__: DEBUG,
@@ -13,7 +13,8 @@ const GLOBALS = {
 
 const routes = [
     '/',
-    '/docs/static_s3'
+    '/docs/static_s3',
+    '/boids'
 ];
 console.log(path.resolve(__dirname, '../build/bundle.js'));
 const config = {
@@ -63,14 +64,15 @@ const config = {
         new StaticSiteGeneratorPlugin('bundle.js', routes),
         new CopyWebpackPlugin([{
             from: '../static',
-        }]),
-        new webpack.optimize.UglifyJsPlugin({
-            compress: { warnings: false }
-        })
+        }])
+        // new webpack.optimize.UglifyJsPlugin({
+        //     compress: { warnings: false }
+        // })
     ],
     stats: {
         chunks: false
     },
     cache: false
 };
+console.log(config.module.loaders[0].query.plugins);
 export default config;
