@@ -2,7 +2,7 @@ import React from 'react';
 import BoidsWorker from 'worker-loader!../../workers/BoidsWorker'
 import BoidsArray from "../../structures/BoidsArray";
 import {Button, FormControl, FormGroup, InputGroup} from "react-bootstrap";
-import {DATA_MSG, DIRTY_MSG, INIT_MSG, RESET_MSG, STATUS_MSG, SWARM_FACTOR_MSG} from "../../workers/BoidsWorkerMsg";
+import {DATA_MSG, DIRTY_MSG, INIT_MSG, RESET_MSG, STATUS_MSG} from "../../workers/BoidsWorkerMsg";
 import BoidsVector3 from "../../structures/BoidsVector3";
 
 export default class Boids extends React.Component {
@@ -15,11 +15,10 @@ export default class Boids extends React.Component {
         this.numBoids = 200;
         this.dirty = true;
         this.state = {
-            swarmFactor: 200,
-            minDistance: 8,
-            maxSpeed: 40
+            swarmFactor: 8,
+            minDistance: 40,
+            maxSpeed: 100
         };
-        // this.state.swarmFactor = 200;
     }
 
     render() {
@@ -52,7 +51,7 @@ export default class Boids extends React.Component {
 
         this.camera = new BABYLON.FreeCamera(
             this.cameraName,
-            new BABYLON.Vector3(0, 0, 400),
+            new BABYLON.Vector3(4000, 4000, 4000),
             this.scene);
         this.camera.setTarget(BABYLON.Vector3.Zero());
         const light = new BABYLON.HemisphericLight(
@@ -70,23 +69,16 @@ export default class Boids extends React.Component {
             minDistance: this.state.minDistance,
             maxSpeed: this.state.maxSpeed
         });
-        console.log(this.worker);
-
         this.worker.onmessage = this.onWorkerMessage.bind(this);
         for (let i = 0; i < this.boids.count(); i++) {
             const name = 'sphere' + i;
-            this.spheres[i] = BABYLON.Mesh.CreateBox(name, 4, this.scene);
+            this.spheres[i] = BABYLON.Mesh.CreateBox(name, 20, this.scene);
         }
         let p = this.boids.avgPosition();
         let v = this.boids.avgVelocity();
         this.boidVector = BABYLON.MeshBuilder.CreateLines("boidVector", {points: [
            this.toBabylonVector(p), this.toBabylonVector(p.add(v))
         ]}, this.scene);
-
-
-        const envTexture = new BABYLON.CubeTexture("/assets/textures/SpecularHDR.dds", this.scene);
-        this.scene.createDefaultSkybox(envTexture, true, 1000);
-
 
         // window.setInterval(() => {console.log(`fps ${this.engine.getFps()}`);}, 100);
         this.engine.runRenderLoop(this.babylonRender.bind(this));
@@ -100,7 +92,6 @@ export default class Boids extends React.Component {
     }
 
     onWorkerMessage(msg) {
-        // console.log(msg);
         switch (msg.data.type) {
             case STATUS_MSG:
                 console.log(`worker status: ${msg.data.status}`);
@@ -132,7 +123,7 @@ export default class Boids extends React.Component {
             ], instance: this.boidVector});
             // const com = this.boids.avgPosition();
             // const t = new BABYLON.Vector3(com.x, com.y, com.z);
-            this.camera.setTarget(this.toBabylonVector(com));
+            // this.camera.setTarget(this.toBabylonVector(com));
             this.scene.render();
             this.dirty = false;
         }

@@ -2,12 +2,9 @@ import BoidsArray from "../structures/BoidsArray";
 import BoidsVector3 from "../structures/BoidsVector3";
 import {RESET_MSG, INIT_MSG, DIRTY_MSG, STATUS_MSG, DATA_MSG} from "./BoidsWorkerMsg";
 
-console.log('worker loaded');
-
 let boidsWorker = undefined;
 class BoidsWorker {
     constructor(data) {
-        console.log('BoidsWorker loaded');
         this.boids = new BoidsArray(data.positionBuffer, data.velocityBuffer);
         this.data = data;
         this.reset();
@@ -43,7 +40,6 @@ class BoidsWorker {
     }
 
     think() {
-
         let center = BoidsVector3.createNew();
         let v;
         for (let i = 0; i < this.boids.count(); i++) {
@@ -52,7 +48,7 @@ class BoidsWorker {
             v = this.boids.getVelocity(i);
             const v1 = this.moveTowards(i, com);
             v.add(v1);
-            this.avoidOthers(i);
+            v.add(this.avoidOthers(i));
             const v3 = this.matchSwarmVelocity(i, cov);
             v.add(v3);
             const v4 = this.moveTowards(i, center);
@@ -77,22 +73,6 @@ class BoidsWorker {
         return perceivedCOM.sub(p).div(factor);
     }
 
-    // moveTowards(i) {
-    //     const factor = 100;
-    //     const com = BoidsVector3.createNew();
-    //     for (let j = 0; j < this.boidsArray.numBoids(); j++) {
-    //         if (i !== j) {
-    //             com.add(this.boidsArray.getPositionVector(j));
-    //         }
-    //     }
-    //     com.div(this.boidsArray.numBoids() - 1);
-    //     let p = this.boidsArray.getPositionVector(i);
-    //     return com.sub(p).div(factor);
-    //     // let perceivedCOM = com.copyOf().asAvgWithout(p, this.boidsArray.numBoids());
-    //     // return perceivedCOM.sub(p).div(factor);
-    // }
-
-
     avoidOthers(i) {
         const minDistance = this.data.minDistance;
         const v = BoidsVector3.createNew();
@@ -101,24 +81,11 @@ class BoidsWorker {
         for (let j = 0; j < this.boids.count(); j++) {
             if (j !== i) {
                 p2 = this.boids.getPosition(j);
-                // const dist = this.getStoredDistance(i, j);
-                // const distDirect = p.distance(p2);
-                // const iSum = BoidsWorker.geometricSum(i-1);
-                // const jSum = BoidsWorker.geometricSum(j-1);
-                // let idx = BoidsWorker.getStoredDistIdx(i, j);
-                // if (Math.abs(dist - distDirect) > 0.01) {
-                //     throw new Error('distance compute failed');
-                // }
-                // let d;
-                // d = p.distance(p2);
                 if (p.distance(p2) < minDistance) {
-                    v.sub(p.copyOf().sub(p2));
+                    v.add(p.copyOf().sub(p2));
                 }
             }
         }
-        // v.div(this.boidsArray.numBoids());
-        // v.limitLength(10);
-        p.sub(v);
         return v;
     }
 }
