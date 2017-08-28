@@ -1,6 +1,6 @@
 
 export default class Storage {
-    constructor() {
-
+    constructor(key, version) {
+        this.prefixKey = `${key}.${version}`;
     }
 }

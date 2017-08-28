@@ -45,33 +45,18 @@ export default class BoidsVector3 {
     }
 
     distance(vectorB) {
-        if (typeof vectorB !== typeof this) {
+        if (!vectorB instanceof BoidsVector3) {
             throw new TypeError('Vector must be of type: ' + typeof this);
         }
         return Math.sqrt(
-            Math.pow(this.x - vectorB.x, 2),
-            Math.pow(this.y - vectorB.y, 2),
+            Math.pow(this.x - vectorB.x, 2) +
+            Math.pow(this.y - vectorB.y, 2) +
             Math.pow(this.z - vectorB.z, 2)
         )
     }
 
-    // subtract(vectorB) {
-    //     if (typeof vectorB !== typeof this) {
-    //         throw new TypeError('Vector must be of type: ' + typeof this);
-    //     }
-    //     return this.copy().subtractInPlace(vectorB);
-    //     // let v = this.copy();
-    //     // v.subtractInPlace(vectorB);
-    //     // return v;
-    //     // let newArr = this.backingArray.subarray(this.offset, VALS_PER_BOID);
-    //     // newArr[0] -= vectorB.x;
-    //     // newArr[1] -= vectorB.y;
-    //     // newArr[2] -= vectorB.z;
-    //     // return new BoidsVector3(newArr, 0);
-    // }
-
     sub(vectorB) {
-        if (typeof vectorB !== typeof this) {
+        if (!vectorB instanceof BoidsVector3) {
             throw new TypeError('Vector must be of type: ' + typeof this);
         }
         this.x -= vectorB.x;
@@ -80,23 +65,8 @@ export default class BoidsVector3 {
         return this;
     }
 
-    // add(vectorB) {
-    //     if (typeof vectorB !== typeof this) {
-    //         throw new TypeError('Vector must be of type: ' + typeof this);
-    //     }
-    //     return this.copy().addInPlace(vectorB);
-    //     // let v = this.copy();
-    //     // v.addInPlace(vectorB);
-    //     // return v;
-    //     // let newArr = this.backingArray.subarray(this.offset, VALS_PER_BOID);
-    //     // newArr[0] += vectorB.x;
-    //     // newArr[1] += vectorB.y;
-    //     // newArr[2] += vectorB.z;
-    //     // return BoidsVector3(newArr, 0);
-    // }
-
     add(vectorB) {
-        if (typeof vectorB !== typeof this) {
+        if (!vectorB instanceof BoidsVector3) {
             throw new TypeError('Vector must be of type: ' + typeof this);
         }
         this.x += vectorB.x;
@@ -119,17 +89,20 @@ export default class BoidsVector3 {
         return this;
     }
 
-    asAvgWithout(vectorB) {
-        if (typeof vectorB !== typeof this) {
+    asAvgWithout(vectorB, len) {
+        if (!vectorB instanceof BoidsVector3) {
             throw new TypeError('Vector must be of type: ' + typeof this);
         }
-        this.mul(VALS_PER_BOID);
+        if (len === undefined) {
+            throw new TypeError('Length must be defined.');
+        }
+        this.mul(len);
         this.sub(vectorB);
-        this.div(VALS_PER_BOID - 1);
+        this.div(len - 1);
         return this;
     }
 
-    length() {
+    get length() {
         return Math.sqrt(
             Math.pow(this.x, 2) +
             Math.pow(this.y, 2) +
@@ -137,22 +110,35 @@ export default class BoidsVector3 {
         )
     }
 
-    copy() {
-        return new BoidsVector3(this.backingArray.subarray(this.offset, VALS_PER_BOID), 0);
+    copyOf() {
+        const c = BoidsVector3.createNew();
+        c.add(this);
+        return c;
     }
 
     toString() {
         return `(${this.x},${this.y},${this.z}`;
     }
 
+    setZero() {
+        this.x = 0;
+        this.y = 0;
+        this.z = 0;
+    }
 
+    limitLength(max) {
+        const l = this.length;
+        if (l > max) {
+            this.div(l).mul(max);
+        }
+    }
 
-    // subtractInPlace(vectorB) {
-    //     if (typeof vectorB !== typeof this) {
-    //         throw new TypeError('Vector must be of type: ' + typeof this);
-    //     }
-    //     this.vector[0] -= vectorB.x;
-    //     this.vector[1] -= vectorB.y;
-    //     this.vector[2] -= vectorB.z;
-    // }
+    equals(vectorB) {
+        if (!vectorB instanceof BoidsVector3) {
+            throw new TypeError('Vector must be of type: ' + typeof this);
+        }
+        return this.x === vectorB.x &&
+            this.y === vectorB.y &&
+            this.z === vectorB.z;
+    }
 }

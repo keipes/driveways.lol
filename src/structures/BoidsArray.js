@@ -1,80 +1,73 @@
 
 import BoidsVector3 from "./BoidsVector3";
 import {VALS_PER_BOID} from "./BoidsConstants";
-// import {BOID_X, BOID_Y, BOID_Z, VALS_PER_BOID} from "./BoidsConstants";
 
 export default class BoidsArray {
 
-    static createWithNewBuffer(length) {
-        console.log('initializing new backing buffer');
-        return new BoidsArray(new SharedArrayBuffer(Float32Array.BYTES_PER_ELEMENT * VALS_PER_BOID * length));
+    static create(length) {
+        return new BoidsArray(
+            new SharedArrayBuffer(Float32Array.BYTES_PER_ELEMENT * VALS_PER_BOID * length),
+            new SharedArrayBuffer(Float32Array.BYTES_PER_ELEMENT * VALS_PER_BOID * length)
+        );
     }
 
-    constructor(backingBuffer) {
-        console.log('initializing from shared buffer');
-        // this.intsPerBoid = 3;
-        this.sharedBuffer = backingBuffer;
-        this.intLength = this.sharedBuffer.byteLength / Float32Array.BYTES_PER_ELEMENT;
-        this.length = this.intLength / VALS_PER_BOID;
-        this.sharedArray = new Float32Array(this.sharedBuffer);
-        this.vectors = [];
+    constructor(positionBuffer, velocityBuffer) {
+        if (positionBuffer.byteLength !== velocityBuffer.byteLength) {
+            throw new Error('Buffers must be of equal length');
+        }
+        this.positionBuffer = positionBuffer;
+        this.positionArray = new Float32Array(this.positionBuffer);
+        this.velocityBuffer = velocityBuffer;
+        this.velocityArray = new Float32Array(this.velocityBuffer);
+        this.length = this.positionBuffer.byteLength / Float32Array.BYTES_PER_ELEMENT / VALS_PER_BOID;
+        this.positionVectors = [];
+        this.velocityVectors = [];
         if (isNaN(this.length)) {
             throw new Error('length NaN');
         }
-        if (isNaN(this.intLength)) {
-            throw new Error('intLength NaN');
-        }
-        console.debug('I have ' + this.length + ' boids.');
-        console.debug('I have ' + this.intLength + ' ints.');
-        console.debug('My sharedBuffer is ' + this.sharedBuffer);
-        console.debug('My sharedBuffer has ' + this.sharedBuffer.byteLength + ' bytes.');
-        console.debug('My sharedArray is ' + this.sharedArray);
     }
 
-    getBuffer() {
-        return this.sharedBuffer;
+    getPositionBuffer() {
+        return this.positionBuffer;
     }
 
-    numBoids() {
+    getVelocityBuffer() {
+        return this.velocityBuffer;
+    }
+
+    count() {
         return this.length;
     }
 
-    // getBoidX(i) {
-    //     return this.sharedArray[i * VALS_PER_BOID + BOID_X];
-    // }
-    //
-    // setBoidX(i, x) {
-    //     this.sharedArray[i * VALS_PER_BOID + BOID_X] = x;
-    // }
-    //
-    // getBoidY(i) {
-    //     return this.sharedArray[i * VALS_PER_BOID + BOID_Y];
-    // }
-    //
-    // setBoidY(i, y) {
-    //     this.sharedArray[i * VALS_PER_BOID + BOID_Y] = y;
-    // }
-    //
-    // getBoidZ(i) {
-    //     return this.sharedArray[i * VALS_PER_BOID + BOID_Z];
-    // }
-    //
-    // setBoidZ(i, z) {
-    //     this.sharedArray[i * VALS_PER_BOID + BOID_Z] = z;
-    // }
-
-    getPositionVector(i) {
-        if (this.vectors[i] === undefined) {
-            this.vectors[i] = new BoidsVector3(this.sharedArray, i * VALS_PER_BOID);
+    getPosition(i) {
+        if (this.positionVectors[i] === undefined) {
+            this.positionVectors[i] = new BoidsVector3(this.positionArray, i * VALS_PER_BOID);
         }
-        return this.vectors[i];
+        return this.positionVectors[i];
     }
 
-    // validate() {
-    //     this.sharedArray.forEach((v) => {
-    //         if (isNaN(v)) {
-    //
-    //         }
-    //     })
-    // }
+    getVelocity(i) {
+        if (this.velocityVectors[i] === undefined) {
+            this.velocityVectors[i] = new BoidsVector3(this.velocityArray, i * VALS_PER_BOID);
+        }
+        return this.velocityVectors[i];
+    }
+
+    avgPosition() {
+        let p = BoidsVector3.createNew();
+        for (let i = 0; i < this.count(); i++) {
+            p.add(this.getPosition(i));
+        }
+        p.div(this.count());
+        return p;
+    }
+
+    avgVelocity() {
+        let v = BoidsVector3.createNew();
+        for (let i = 0; i < this.count(); i++) {
+            v.add(this.getVelocity(i));
+        }
+        v.div(this.count());
+        return v;
+    }
 }
