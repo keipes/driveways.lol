@@ -40,7 +40,7 @@ const get_html = (rendered) => {
 
 if (typeof window !== 'undefined' && window.document) {
     ReactDOM.render(
-        <BrowserRouter>
+        <BrowserRouter history={history}>
             {inner}
         </BrowserRouter>
         , document.getElementById('react-mount-point'))

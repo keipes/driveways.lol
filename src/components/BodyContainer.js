@@ -11,12 +11,8 @@ export default class BodyContainer extends React.Component {
         return (<div>
             <Navigation/>
             <Grid>
-                {/*<Col md="3" xsHidden smHidden>*/}
-                    {/*<SideBar/>*/}
-                {/*</Col>*/}
                 <Col md={12} sm={12}>
                     {this.props.children}
-                    {/*<Content/>*/}
                 </Col>
 
             </Grid>

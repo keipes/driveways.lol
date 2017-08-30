@@ -1,7 +1,7 @@
 import React from 'react';
-import BoidsWorker from 'worker-loader!../../workers/BoidsWorker'
+import BoidsWorker from 'worker-loader?inline!../../workers/BoidsWorker'
 import BoidsArray from "../../structures/BoidsArray";
-import {Button, FormControl, FormGroup, InputGroup} from "react-bootstrap";
+import {Button, Col, ControlLabel, FormControl, FormGroup, InputGroup, Row} from "react-bootstrap";
 import {DATA_MSG, DIRTY_MSG, INIT_MSG, RESET_MSG, STATUS_MSG} from "../../workers/BoidsWorkerMsg";
 import BoidsVector3 from "../../structures/BoidsVector3";
 
@@ -12,7 +12,7 @@ export default class Boids extends React.Component {
         this.cameraName = "myCamera";
         this.lightName = "myLight";
         this.spheres = [];
-        this.numBoids = 200;
+        this.numBoids = 100;
         this.dirty = true;
         this.state = {
             swarmFactor: 8,
@@ -24,18 +24,27 @@ export default class Boids extends React.Component {
     render() {
         return(
             <div>
-                <div className="d-boids-controls">
-                    <form>
-                        <FormGroup>
-                            <InputGroup>
-                                <FormControl type="number" value={this.state.swarmFactor} onChange={this.changeSwarmFactor.bind(this)}/>
-                                <FormControl type="number" value={this.state.minDistance} onChange={this.changeMinDistance.bind(this)}/>
-                                <FormControl type="number" value={this.state.maxSpeed} onChange={this.changeMaxSpeed.bind(this)}/>
-                            </InputGroup>
-                        </FormGroup>
-                    </form>
-                    <Button onClick={this.reset.bind(this)}>{"Reset"}</Button>
-                </div>
+                <Row>
+                    <Col md={3}>
+                        <div className="d-boids-controls">
+                            <form>
+                                <FormGroup>
+                                    <ControlLabel>Swarm Factor</ControlLabel>
+                                    <FormControl type="number" value={this.state.swarmFactor} onChange={this.changeSwarmFactor.bind(this)}/>
+                                </FormGroup>
+                                <FormGroup>
+                                    <ControlLabel>Min Distance</ControlLabel>
+                                    <FormControl type="number" value={this.state.minDistance} onChange={this.changeMinDistance.bind(this)}/>
+                                </FormGroup>
+                                <FormGroup>
+                                    <ControlLabel>Max Speed</ControlLabel>
+                                    <FormControl type="number" value={this.state.maxSpeed} onChange={this.changeMaxSpeed.bind(this)}/>
+                                </FormGroup>
+                            </form>
+                            <Button onClick={this.reset.bind(this)}>{"Reset"}</Button>
+                        </div>
+                    </Col>
+                </Row>
                 <canvas id="foo" className="boids-canvas"
                         ref={(canvas) => {this.canvas = canvas;}}
                 />
@@ -51,7 +60,7 @@ export default class Boids extends React.Component {
 
         this.camera = new BABYLON.FreeCamera(
             this.cameraName,
-            new BABYLON.Vector3(4000, 4000, 4000),
+            new BABYLON.Vector3(2000, 2000, 2000),
             this.scene);
         this.camera.setTarget(BABYLON.Vector3.Zero());
         const light = new BABYLON.HemisphericLight(
@@ -82,6 +91,12 @@ export default class Boids extends React.Component {
 
         // window.setInterval(() => {console.log(`fps ${this.engine.getFps()}`);}, 100);
         this.engine.runRenderLoop(this.babylonRender.bind(this));
+    }
+
+    componentWillUnmount() {
+        if (this.worker !== undefined) {
+            this.worker.terminate();
+        }
     }
 
     toBabylonVector(boidsVector) {
@@ -115,15 +130,11 @@ export default class Boids extends React.Component {
                 this.spheres[i].position.y = p.y;
                 this.spheres[i].position.z = p.z;
             }
-            // this.boidVector = BABYLON.MeshBuilder.CreateLines("boidVector", [])
-            const com = this.boids.avgPosition();
-            const cov = this.boids.avgVelocity();
-            this.boidVector = BABYLON.MeshBuilder.CreateLines("boidVector", {points: [
-                this.toBabylonVector(com), this.toBabylonVector(com.copyOf().add(cov))
-            ], instance: this.boidVector});
             // const com = this.boids.avgPosition();
-            // const t = new BABYLON.Vector3(com.x, com.y, com.z);
-            // this.camera.setTarget(this.toBabylonVector(com));
+            // const cov = this.boids.avgVelocity();
+            // this.boidVector = BABYLON.MeshBuilder.CreateLines("boidVector", {points: [
+            //     this.toBabylonVector(com), this.toBabylonVector(com.copyOf().add(cov))
+            // ], instance: this.boidVector});
             this.scene.render();
             this.dirty = false;
         }

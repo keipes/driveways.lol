@@ -64,10 +64,10 @@ const config = {
         new StaticSiteGeneratorPlugin('bundle.js', routes),
         new CopyWebpackPlugin([{
             from: '../static',
-        }])
-        // new webpack.optimize.UglifyJsPlugin({
-        //     compress: { warnings: false }
-        // })
+        }]),
+        new webpack.optimize.UglifyJsPlugin({
+            compress: { warnings: false }
+        })
     ],
     stats: {
         chunks: false

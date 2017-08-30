@@ -1,6 +1,7 @@
-import React, {PropTypes} from 'react';
-import { Nav, Navbar, NavItem, Image } from 'react-bootstrap';
-
+import React from 'react';
+import {Nav, Navbar, NavItem} from 'react-bootstrap';
+import {Link} from "react-router-dom";
+import {LinkContainer} from "react-router-bootstrap";
 
 export default class Navigation extends React.Component {
     render() {
@@ -9,13 +10,18 @@ export default class Navigation extends React.Component {
                 <div className="container">
                     <Navbar.Header>
                         <Navbar.Brand>
-                            <a href="/">driveways</a>
+                            <Link to="/">driveways</Link>
                         </Navbar.Brand>
                         <Navbar.Toggle />
                     </Navbar.Header>
                     <Navbar.Collapse>
                         <Nav>
-                            <NavItem href="/docs/static_s3">Static S3 Sites</NavItem>
+                            <LinkContainer to="/docs/static_s3">
+                                <NavItem>Static S3</NavItem>
+                            </LinkContainer>
+                            <LinkContainer to="/boids">
+                                <NavItem>Boids</NavItem>
+                            </LinkContainer>
                         </Nav>
                     </Navbar.Collapse>
                 </div>
