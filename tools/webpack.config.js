@@ -18,6 +18,7 @@ const routes = [
 ];
 console.log(path.resolve(__dirname, '../build/bundle.js'));
 const config = {
+    devtool: 'source-map',
     context: path.resolve(__dirname, '../src'),
     output: {
         path: path.resolve(__dirname, '../build'),
@@ -64,10 +65,10 @@ const config = {
         new StaticSiteGeneratorPlugin('bundle.js', routes),
         new CopyWebpackPlugin([{
             from: '../static',
-        }]),
-        new webpack.optimize.UglifyJsPlugin({
-            compress: { warnings: false }
-        })
+        }])
+        // , new webpack.optimize.UglifyJsPlugin({
+        //     compress: { warnings: false }
+        // })
     ],
     stats: {
         chunks: false

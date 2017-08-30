@@ -3,13 +3,20 @@ import BoidsVector3 from "../structures/BoidsVector3";
 import {RESET_MSG, INIT_MSG, DIRTY_MSG, STATUS_MSG, DATA_MSG} from "./BoidsWorkerMsg";
 
 let boidsWorker = undefined;
-class BoidsWorker {
+
+//     var self = {
+//         addEventListener: ()  => {},
+//         postMessage: () => {}
+//     };
+
+export default class BoidsWorker {
     constructor(data) {
         this.boids = new BoidsArray(data.positionBuffer, data.velocityBuffer);
         this.data = data;
         this.reset();
-        this.think();
         self.postMessage({type: STATUS_MSG, status: 'initialized'});
+        this.distances = new Float32Array(this.boids.count());
+        // this.distances[i] = [];
     }
 
     mergeData(data) {
@@ -42,18 +49,26 @@ class BoidsWorker {
     think() {
         let center = BoidsVector3.createNew();
         let v;
+        const com = this.boids.avgPosition();
+        const cov = this.boids.avgVelocity();
+        let oldV;
+        let oldP;
         for (let i = 0; i < this.boids.count(); i++) {
-            const com = this.boids.avgPosition();
-            const cov = this.boids.avgVelocity();
             v = this.boids.getVelocity(i);
+            oldV = this.boids.getVelocity(i).copyOf();
+            oldP = this.boids.getPosition(i).copyOf();
             const v1 = this.moveTowards(i, com);
             v.add(v1);
-            v.add(this.avoidOthers(i));
+            const v2 = this.avoidOthers(i);
+            v.add(v2);
             const v3 = this.matchSwarmVelocity(i, cov);
             v.add(v3);
             const v4 = this.moveTowards(i, center);
             v.add(v4);
 
+            if (!this.boids.getPosition(i).equals(oldP)) {
+                throw new Error("Position was mutated!");
+            }
             v.limitLength(this.data.maxSpeed);
             this.boids.getPosition(i).add(v);
         }
@@ -88,12 +103,51 @@ class BoidsWorker {
         }
         return v;
     }
+
+    warmupDistances(i) {
+        let p = this.boids.getPosition(i);
+        let p2;
+        for (let j = 0; j < this.boids.count(); j++) {
+            p2 = this.boids.getPosition(j);
+            this.distances[j] = p.distance(p2);
+        }
+    }
+
+    avoidOthers2(i) {
+        const minDistance = this.data.minDistance;
+        const v = BoidsVector3.createNew();
+        let p = this.boids.getPosition(i);
+        let p2;
+        for (let j = 0; j < this.boids.count(); j++) {
+            if (j !== i) {
+                if (this.distances[j] < minDistance) {
+                    v.add(this.boids.getPosition(j));
+                    // v.add(p.copyOf().sub(this.boids.getPosition(j)));
+                    // v.sub(this.boids.getPosition(j).copyOf().add(p));
+                }
+            }
+        }
+        v.div(this.boids.count());
+        return p.copyOf().sub(v);
+        // for (let j = 0; j < i; j++) {
+        //     if (this.distances[j] < minDistance) {
+        //         v.add(p.copyOf().sub(this.boids.getPosition(j)));
+        //     }
+        // }
+        // for (let j = i; j < this.boids.count(); j++) {
+        //     if (this.distances[j] < minDistance) {
+        //         v.add(p.copyOf().sub(this.boids.getPosition(j)));
+        //     }
+        // }
+        return v;
+    }
 }
 
 self.addEventListener('message', (msg) => {
     switch (msg.data.type) {
         case INIT_MSG:
             boidsWorker = new BoidsWorker(msg.data);
+            boidsWorker.think();
             break;
         case RESET_MSG:
             boidsWorker.reset();
@@ -107,3 +161,4 @@ self.addEventListener('message', (msg) => {
             break;
     }
 });
+

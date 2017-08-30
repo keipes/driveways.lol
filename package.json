@@ -14,7 +14,8 @@
     "start": "babel-node tools/build",
     "test": "mocha --recursive --compilers js:babel-core/register",
     "run": "node tools/server.js",
-    "dev-server": "babel-node tools/dev-server"
+    "dev-server": "babel-node tools/dev-server",
+    "bench": "babel-node tools/bench"
   },
   "author": "",
   "license": "ISC",
@@ -59,6 +60,7 @@
     "react-native": "0.47.2",
     "worker-loader": "0.8.1",
     "mocha": "3.5.0",
-    "chai": "4.1.1"
+    "chai": "4.1.1",
+    "benchmark": "2.1.4"
   }
 }

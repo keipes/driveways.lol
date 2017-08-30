@@ -9,45 +9,53 @@ export default class BoidsVector3 {
     constructor(backingArray, offset) {
         this.backingArray = backingArray;
         this.offset = offset;
+        this.offsetX = offset + BOID_X;
+        this.offsetY = offset + BOID_Y;
+        this.offsetZ = offset + BOID_Z;
+
     }
 
     get x() {
-        return this.backingArray[this.offset + BOID_X];
+        return this.backingArray[this.offsetX];
     }
 
     set x(x) {
         this.backingArray[this.offset + BOID_X] = x;
-        if (isNaN(this.x)) {
-            throw new Error('x is not a number');
-        }
+        // if (isNaN(this.x)) {
+        //     throw new Error('x is not a number');
+        // }
+    }
+
+    set xUnsafe(x) {
+        this.backingArray[this.offset + BOID_X] = x;
     }
 
     get y() {
-        return this.backingArray[this.offset + BOID_Y];
+        return this.backingArray[this.offsetY];
     }
 
     set y(y) {
-        this.backingArray[this.offset + BOID_Y] = y;
-        if (isNaN(this.y)) {
-            throw new Error('y is not a number');
-        }
+        this.backingArray[this.offsetY] = y;
+        // if (isNaN(this.y)) {
+        //     throw new Error('y is not a number');
+        // }
     }
 
     get z() {
-        return this.backingArray[this.offset + BOID_Z];
+        return this.backingArray[this.offsetZ];
     }
 
     set z(z) {
-        this.backingArray[this.offset + BOID_Z] = z;
-        if (isNaN(this.z)) {
-            throw new Error('z is not a number');
-        }
+        this.backingArray[this.offsetZ] = z;
+        // if (isNaN(this.z)) {
+        //     throw new Error('z is not a number');
+        // }
     }
 
     distance(vectorB) {
-        if (!vectorB instanceof BoidsVector3) {
-            throw new TypeError('Vector must be of type: ' + typeof this);
-        }
+        // if (!vectorB instanceof BoidsVector3) {
+        //     throw new TypeError('Vector must be of type: ' + typeof this);
+        // }
         return Math.sqrt(
             Math.pow(this.x - vectorB.x, 2) +
             Math.pow(this.y - vectorB.y, 2) +
@@ -55,10 +63,22 @@ export default class BoidsVector3 {
         )
     }
 
+    distanceUnsafe(vectorB) {
+        // if (!vectorB instanceof BoidsVector3) {
+        //     throw new TypeError('Vector must be of type: ' + typeof this);
+        // }
+        return Math.abs(this.x - vectorB.x) + Math.abs(this.y - vectorB.y) + Math.abs(this.z + vectorB.z);
+        // return Math.sqrt(
+        //     Math.pow(this.x - vectorB.x, 2) +
+        //     Math.pow(this.y - vectorB.y, 2) +
+        //     Math.pow(this.z - vectorB.z, 2)
+        // )
+    }
+
     sub(vectorB) {
-        if (!vectorB instanceof BoidsVector3) {
-            throw new TypeError('Vector must be of type: ' + typeof this);
-        }
+        // if (!vectorB instanceof BoidsVector3) {
+        //     throw new TypeError('Vector must be of type: ' + typeof this);
+        // }
         this.x -= vectorB.x;
         this.y -= vectorB.y;
         this.z -= vectorB.z;
@@ -66,9 +86,6 @@ export default class BoidsVector3 {
     }
 
     add(vectorB) {
-        if (!vectorB instanceof BoidsVector3) {
-            throw new TypeError('Vector must be of type: ' + typeof this);
-        }
         this.x += vectorB.x;
         this.y += vectorB.y;
         this.z += vectorB.z;
@@ -90,12 +107,6 @@ export default class BoidsVector3 {
     }
 
     asAvgWithout(vectorB, len) {
-        if (!vectorB instanceof BoidsVector3) {
-            throw new TypeError('Vector must be of type: ' + typeof this);
-        }
-        if (len === undefined) {
-            throw new TypeError('Length must be defined.');
-        }
         this.mul(len);
         this.sub(vectorB);
         this.div(len - 1);
@@ -134,11 +145,14 @@ export default class BoidsVector3 {
     }
 
     equals(vectorB) {
-        if (!vectorB instanceof BoidsVector3) {
-            throw new TypeError('Vector must be of type: ' + typeof this);
-        }
         return this.x === vectorB.x &&
             this.y === vectorB.y &&
             this.z === vectorB.z;
+    }
+
+    equalsRounded(vectorB) {
+        return Math.round(this.x) === Math.round(vectorB.x) &&
+            Math.round(this.y) === Math.round(vectorB.y) &&
+            Math.round(this.z) === Math.round(vectorB.z);
     }
 }

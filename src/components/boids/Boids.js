@@ -12,13 +12,15 @@ export default class Boids extends React.Component {
         this.cameraName = "myCamera";
         this.lightName = "myLight";
         this.spheres = [];
-        this.numBoids = 100;
+        this.numBoids = 1000;
         this.dirty = true;
         this.state = {
             swarmFactor: 8,
             minDistance: 40,
-            maxSpeed: 100
+            maxSpeed: 100,
+            fps: 0
         };
+        this.workers = [];
     }
 
     render() {
@@ -26,6 +28,7 @@ export default class Boids extends React.Component {
             <div>
                 <Row>
                     <Col md={3}>
+                        <p>{`fps: ${Math.floor(this.state.fps)}`}</p>
                         <div className="d-boids-controls">
                             <form>
                                 <FormGroup>
@@ -89,7 +92,7 @@ export default class Boids extends React.Component {
            this.toBabylonVector(p), this.toBabylonVector(p.add(v))
         ]}, this.scene);
 
-        // window.setInterval(() => {console.log(`fps ${this.engine.getFps()}`);}, 100);
+        window.setInterval(() => {this.setState({fps: this.engine.getFps()});}, 100);
         this.engine.runRenderLoop(this.babylonRender.bind(this));
     }
 

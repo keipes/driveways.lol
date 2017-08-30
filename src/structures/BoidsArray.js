@@ -25,6 +25,10 @@ export default class BoidsArray {
         if (isNaN(this.length)) {
             throw new Error('length NaN');
         }
+        for (let i = 0; i < this.count(); i++) {
+            this.positionVectors[i] = new BoidsVector3(this.positionArray, i * VALS_PER_BOID);
+            this.velocityVectors[i] = new BoidsVector3(this.velocityArray, i * VALS_PER_BOID);
+        }
     }
 
     getPositionBuffer() {
@@ -40,10 +44,11 @@ export default class BoidsArray {
     }
 
     getPosition(i) {
-        if (this.positionVectors[i] === undefined) {
-            this.positionVectors[i] = new BoidsVector3(this.positionArray, i * VALS_PER_BOID);
-        }
         return this.positionVectors[i];
+    }
+
+    getX(i) {
+        return this.positionArray[i * VALS_PER_BOID];
     }
 
     getVelocity(i) {
